@@ -205,7 +205,7 @@ export default function ProjectView() {
   const kw = project.keyword || 'your keyword'
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white">
+    <div className="min-h-screen caribbean-shell text-white">
       {/* Header */}
       <header className="border-b border-white/10 px-6 py-4 sticky top-0 bg-[#0a0a0f]/95 backdrop-blur z-10">
         <div className="max-w-7xl mx-auto flex items-center justify-between">

@@ -14,6 +14,11 @@ export default {
     },
     extend: {
       colors: {
+        caribbean: {
+          lagoon: "#06D6C4", hibiscus: "#FF3D7F", mango: "#FF8C42", papaya: "#FFD23F", coral: "#FF5E5B",
+          ocean: "#003F5C", palm: "#1B998B", reef: "#8338EC", sand: "#FFF8EC", coconut: "#F4E9D0",
+          driftwood: "#8B7355", volcanic: "#1A1A2E", midnight: "#16213E",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

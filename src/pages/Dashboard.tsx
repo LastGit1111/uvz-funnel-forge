@@ -59,12 +59,12 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white">
+    <div className="min-h-screen caribbean-shell text-white">
       {/* Header */}
-      <header className="border-b border-white/10 px-6 py-4">
+      <header className="border-b border-caribbean-lagoon/20 bg-caribbean-volcanic/75 backdrop-blur px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-caribbean-lagoon to-caribbean-ocean flex items-center justify-center shadow-[0_0_24px_rgba(255,61,127,.24)]">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -96,7 +96,7 @@ export default function Dashboard() {
           </div>
           <h2 className="text-5xl md:text-6xl font-black tracking-tight mb-6 leading-none">
             Turn Any Keyword Into<br />
-            <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
+            <span className="caribbean-title">
               a Digital Empire
             </span>
           </h2>
@@ -123,7 +123,7 @@ export default function Dashboard() {
                 onClick={handleStart}
                 disabled={loading}
                 size="lg"
-                className="h-14 px-8 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 rounded-2xl font-semibold text-base"
+                className="h-14 px-8 caribbean-cta text-caribbean-volcanic rounded-2xl font-semibold text-base"
               >
                 {loading ? 'Starting...' : (
                   <><Zap className="w-5 h-5 mr-2" /> Forge It</>

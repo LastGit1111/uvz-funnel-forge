@@ -29,7 +29,7 @@ export default function AuthPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0a0a0f] text-white flex items-center justify-center px-6">
+    <main className="min-h-screen caribbean-shell text-white flex items-center justify-center px-6">
       <form onSubmit={submit} className="w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-7 space-y-5">
         <div className="flex items-center gap-3"><Sparkles className="w-6 h-6 text-violet-400" /><div><h1 className="font-bold text-xl">UVZ Funnel Forge</h1><p className="text-sm text-white/45">{mode === 'login' ? 'Welcome back' : 'Create your workspace'}</p></div></div>
         <label className="block text-sm text-white/70">Email<Input type="email" value={email} onChange={event => setEmail(event.target.value)} required className="mt-2 bg-white/5 border-white/15 text-white" /></label>
