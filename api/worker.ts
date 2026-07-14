@@ -3,7 +3,6 @@
 // AI: LaoZhang API (OpenAI-compatible)
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { serveStatic } from 'hono/cloudflare-workers'
 import authRoutes from './routes/auth'
 import projectRoutes from './routes/projects'
 import uvzRoutes from './routes/modules/uvz'
@@ -17,6 +16,7 @@ import localeRoutes from './routes/locale'
 
 type Env = {
   DB: D1Database
+  ASSETS: Fetcher
   LAOZHANG_API_KEY: string
   JWT_SECRET: string
   ADMIN_SECRET?: string
@@ -95,9 +95,7 @@ app.route('/api/modules/funnel', funnelRoutes)
 app.route('/api/catalog', catalogRoutes)
 app.route('/api/locale', localeRoutes)
 
-// Serve React SPA
-app.use('/static/*', serveStatic({ root: './' }))
-app.use('/assets/*', serveStatic({ root: './' }))
-app.get('*', serveStatic({ root: './', rewriteRequestPath: () => '/index.html' }))
+// Serve built React assets through Cloudflare Pages' native asset binding.
+app.get('*', c => c.env.ASSETS.fetch(c.req.raw))
 
 export default app

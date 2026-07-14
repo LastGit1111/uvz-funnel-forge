@@ -74,6 +74,7 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center gap-3">
             <LanguageSelector />
+            <Button variant="ghost" size="sm" className="text-white/60 hover:text-white" onClick={() => navigate('/login')}>Log in</Button>
             <Button variant="ghost" size="sm" className="text-white/60 hover:text-white" onClick={() => navigate('/catalog')}>
               <BarChart3 className="w-4 h-4 mr-1.5" /> Catalog
             </Button>
