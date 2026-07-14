@@ -10,5 +10,11 @@
       "database_name": "uvz-funnel-db",
       "database_id": "2b6c8fa2-5ae5-4b55-8dfc-25997b5cdace"
     }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "ASSETS_BUCKET",
+      "bucket_name": "uvz-funnel-forge-assets"
+    }
   ]
 }

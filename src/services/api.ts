@@ -41,6 +41,17 @@ export const locale = {
   save: (value: string) => call('/locale', { method: 'PUT', body: JSON.stringify({ locale: value }) }),
 }
 
+export const assets = {
+  list: (projectId: string) => call(`/assets/${projectId}`),
+  upload: async (projectId: string, file: File) => {
+    const token = localStorage.getItem('uvz_token') || ''
+    const response = await fetch(`${API}/assets/${projectId}`, { method: 'POST', headers: { 'Content-Type': file.type || 'application/octet-stream', 'X-File-Name': file.name, ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: file })
+    const data = await response.json()
+    if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`)
+    return data
+  },
+}
+
 // ── Projects ──────────────────────────────────────────────────────────────────
 
 export const projects = {

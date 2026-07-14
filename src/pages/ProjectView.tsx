@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Search, Package, Zap, Bot, BookOpen, Layers, BarChart3, Loader2, CheckCircle, ChevronRight, Copy, ExternalLink, Sparkles, RefreshCw, Star } from 'lucide-react'
+import { ArrowLeft, Search, Package, Zap, Bot, BookOpen, Layers, BarChart3, Loader2, CheckCircle, ChevronRight, Copy, ExternalLink, Sparkles, RefreshCw, Star, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
-import { projects, uvz, product, tools, chatbot, course, funnel } from '@/services/api'
+import { projects, uvz, product, tools, chatbot, course, funnel, assets } from '@/services/api'
 
 const TABS = [
   { id: 'uvz', label: 'UVZ Analyzer', icon: Search },
@@ -129,6 +129,7 @@ export default function ProjectView() {
   const [chatInput, setChatInput] = useState('')
   const [chatLoading, setChatLoading] = useState(false)
   const [loading, setLoading] = useState<string | null>(null)
+  const [assetUploading, setAssetUploading] = useState(false)
 
   const sessionId = id + '-demo'
 
@@ -182,6 +183,19 @@ export default function ProjectView() {
     }
   }
 
+  const uploadAsset = async (file?: File) => {
+    if (!file || !id) return
+    setAssetUploading(true)
+    try {
+      await assets.upload(id, file)
+      toast({ title: 'Asset uploaded', description: `${file.name} is stored in your project asset library.` })
+    } catch (error: any) {
+      toast({ title: 'Upload failed', description: error.message || 'Log in before uploading project assets.', variant: 'destructive' })
+    } finally {
+      setAssetUploading(false)
+    }
+  }
+
   if (!project) return (
     <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
       <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
@@ -207,6 +221,10 @@ export default function ProjectView() {
           <Badge variant="outline" className={`${project.status === 'complete' ? 'border-emerald-500/40 text-emerald-300' : 'border-amber-500/40 text-amber-300'}`}>
             {project.status}
           </Badge>
+          <label className="cursor-pointer">
+            <input type="file" className="sr-only" disabled={assetUploading} onChange={event => uploadAsset(event.target.files?.[0])} />
+            <span className="inline-flex items-center gap-1.5 text-xs text-white/60 hover:text-white"><Upload className="w-3.5 h-3.5" />{assetUploading ? 'Uploading…' : 'Upload asset'}</span>
+          </label>
         </div>
       </header>
 

@@ -13,10 +13,12 @@ import courseRoutes from './routes/modules/course'
 import funnelRoutes from './routes/modules/funnel'
 import catalogRoutes from './routes/catalog'
 import localeRoutes from './routes/locale'
+import assetRoutes from './routes/assets'
 
 type Env = {
   DB: D1Database
   ASSETS: Fetcher
+  ASSETS_BUCKET: R2Bucket
   LAOZHANG_API_KEY: string
   JWT_SECRET: string
   ADMIN_SECRET?: string
@@ -94,6 +96,7 @@ app.route('/api/modules/course', courseRoutes)
 app.route('/api/modules/funnel', funnelRoutes)
 app.route('/api/catalog', catalogRoutes)
 app.route('/api/locale', localeRoutes)
+app.route('/api/assets', assetRoutes)
 
 // Serve built React assets through Cloudflare Pages' native asset binding.
 app.get('*', c => c.env.ASSETS.fetch(c.req.raw))
