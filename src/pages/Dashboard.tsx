@@ -8,18 +8,20 @@ import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
 import { projects, catalog } from '@/services/api'
 import LanguageSelector from '@/components/LanguageSelector'
+import { useLocale } from '@/i18n'
 
 const MODULES = [
-  { id: 1, icon: Search, label: 'UVZ Analyzer', desc: 'Turn any keyword into 10 scored UVZ options', color: 'from-violet-500 to-purple-600' },
-  { id: 2, icon: Package, label: 'Product Generator', desc: 'Generate title, outline & price recommendation', color: 'from-blue-500 to-cyan-600' },
-  { id: 3, icon: Zap, label: 'Light Tool Builder', desc: 'Calculator, Quiz, Planner, Tracker, Generator', color: 'from-amber-500 to-orange-600' },
-  { id: 4, icon: Bot, label: 'AI Chatbot Advisor', desc: '24/7 sales agent trained on your product', color: 'from-emerald-500 to-teal-600' },
+  { id: 1, icon: Search, label: 'analyzer', desc: 'analyzerDesc', color: 'from-violet-500 to-purple-600' },
+  { id: 2, icon: Package, label: 'productGenerator', desc: 'productDesc', color: 'from-blue-500 to-cyan-600' },
+  { id: 3, icon: Zap, label: 'toolBuilder', desc: 'toolDesc', color: 'from-amber-500 to-orange-600' },
+  { id: 4, icon: Bot, label: 'advisor', desc: 'advisorDesc', color: 'from-emerald-500 to-teal-600' },
   { id: 5, icon: BookOpen, label: 'Course Pack Maker', desc: 'Outline → full script, slides & worksheets', color: 'from-rose-500 to-pink-600' },
-  { id: 6, icon: Layers, label: 'Funnel Builder', desc: 'Landing copy, email sequence, hook scripts', color: 'from-indigo-500 to-blue-600' },
-  { id: 7, icon: BarChart3, label: 'Catalog & Analytics', desc: 'Dashboard for all products & conversions', color: 'from-gray-600 to-slate-700' },
+  { id: 6, icon: Layers, label: 'funnelBuilder', desc: 'funnelDesc', color: 'from-indigo-500 to-blue-600' },
+  { id: 7, icon: BarChart3, label: 'analytics', desc: 'analyticsDesc', color: 'from-gray-600 to-slate-700' },
 ]
 
 export default function Dashboard() {
+  const { t, locale } = useLocale()
   const [keyword, setKeyword] = useState('')
   const [themeType, setThemeType] = useState('')
   const [themeValue, setThemeValue] = useState('')
@@ -45,8 +47,8 @@ export default function Dashboard() {
 
   const handleStart = async () => {
     const kw = keyword.trim()
-    if (!kw) return toast({ title: 'Enter a keyword', description: 'Type any niche, industry, or topic to begin', variant: 'destructive' })
-    if (themeType && !themeValue.trim()) return toast({ title: 'Name the theme', description: `Enter the ${themeType} you want the landing page to evoke.`, variant: 'destructive' })
+    if (!kw) return toast({ title: t('enterKeywordTitle'), description: t('enterKeywordText'), variant: 'destructive' })
+    if (themeType && !themeValue.trim()) return toast({ title: t('nameTheme'), description: t('nameThemeText', { theme: t(themeType) }), variant: 'destructive' })
     setLoading(true)
     try {
       const p = await projects.create(kw, themeType, themeValue.trim())
@@ -69,18 +71,18 @@ export default function Dashboard() {
             </div>
             <div>
               <h1 className="font-bold text-lg leading-none">UVZ Funnel Forge</h1>
-              <p className="text-xs text-white/40 mt-0.5">AI Digital Product Factory</p>
+              <p className="text-xs text-white/40 mt-0.5">{t('tagline')}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <LanguageSelector />
-            <Button variant="ghost" size="sm" className="text-white/60 hover:text-white" onClick={() => navigate('/login')}>Log in</Button>
+            <Button variant="ghost" size="sm" className="text-white/60 hover:text-white" onClick={() => navigate('/login')}>{t('login')}</Button>
             <Button variant="ghost" size="sm" className="text-white/60 hover:text-white" onClick={() => navigate('/catalog')}>
-              <BarChart3 className="w-4 h-4 mr-1.5" /> Catalog
+              <BarChart3 className="w-4 h-4 mr-1.5" /> {t('catalog')}
             </Button>
             <a href="https://nova-brain-orchestrator.shermanmonte1111.workers.dev/brain/apps" target="_blank" rel="noopener noreferrer">
               <Button variant="ghost" size="sm" className="text-white/60 hover:text-white">
-                <Brain className="w-4 h-4 mr-1.5" /> Brain
+                <Brain className="w-4 h-4 mr-1.5" /> {t('brain')}
               </Button>
             </a>
           </div>
@@ -92,12 +94,12 @@ export default function Dashboard() {
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-violet-500/10 border border-violet-500/20 rounded-full px-4 py-1.5 text-sm text-violet-300 mb-6">
             <Sparkles className="w-3.5 h-3.5" />
-            One keyword. One session. One complete product business.
+            {t('heroBadge')}
           </div>
           <h2 className="text-5xl md:text-6xl font-black tracking-tight mb-6 leading-none">
-            Turn Any Keyword Into<br />
+            {t('heroStart')}<br />
             <span className="caribbean-title">
-              a Digital Empire
+              {t('heroEnd')}
             </span>
           </h2>
           <p className="text-white/50 text-xl max-w-2xl mx-auto mb-10">
@@ -125,8 +127,8 @@ export default function Dashboard() {
                 size="lg"
                 className="h-14 px-8 caribbean-cta text-caribbean-volcanic rounded-2xl font-semibold text-base"
               >
-                {loading ? 'Starting...' : (
-                  <><Zap className="w-5 h-5 mr-2" /> Forge It</>
+                {loading ? t('starting') : (
+                  <><Zap className="w-5 h-5 mr-2" /> {t('forge')}</>
                 )}
               </Button>
             </div>
@@ -135,15 +137,15 @@ export default function Dashboard() {
             </p>
             <div className="mt-5 grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-3 text-left">
               <select value={themeType} onChange={event => { setThemeType(event.target.value); if (!event.target.value) setThemeValue('') }} className="h-11 rounded-xl border border-white/15 bg-white/5 px-3 text-sm text-white outline-none focus:border-violet-500">
-                <option value="" className="bg-[#15151d]">No page theme</option>
-                <option value="country" className="bg-[#15151d]">Country</option>
-                <option value="place" className="bg-[#15151d]">Island or place</option>
-                <option value="event" className="bg-[#15151d]">Event</option>
-                <option value="zodiac" className="bg-[#15151d]">Zodiac sign</option>
-                <option value="custom" className="bg-[#15151d]">Custom theme</option>
+                <option value="" className="bg-[#15151d]">{t('noTheme')}</option>
+                <option value="country" className="bg-[#15151d]">{t('country')}</option>
+                <option value="place" className="bg-[#15151d]">{t('place')}</option>
+                <option value="event" className="bg-[#15151d]">{t('event')}</option>
+                <option value="zodiac" className="bg-[#15151d]">{t('zodiac')}</option>
+                <option value="custom" className="bg-[#15151d]">{t('custom')}</option>
               </select>
               {themeType && <Input value={themeValue} onChange={event => setThemeValue(event.target.value)} placeholder={themeType === 'country' ? 'e.g. Curaçao' : themeType === 'place' ? 'e.g. Klein Curaçao' : themeType === 'event' ? 'e.g. Carnival 2027' : themeType === 'zodiac' ? 'e.g. Scorpio' : 'Describe the theme'} className="h-11 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-xl focus-visible:ring-violet-500" />}
-              {!themeType && <p className="self-center text-xs text-white/35">Optional: guide the landing page with a location, event, zodiac, or custom visual theme.</p>}
+              {!themeType && <p className="self-center text-xs text-white/35">{t('themeHelp')}</p>}
             </div>
           </div>
         </div>
@@ -152,10 +154,10 @@ export default function Dashboard() {
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
             {[
-              { label: 'Products Built', value: stats.total_products || 0, icon: Package },
-              { label: 'Funnels Live', value: stats.total_funnels || 0, icon: Layers },
-              { label: 'Chat Sessions', value: stats.total_chats || 0, icon: Bot },
-              { label: 'Total Events', value: stats.total_events || 0, icon: TrendingUp },
+              { label: t('productsBuilt'), value: stats.total_products || 0, icon: Package },
+              { label: t('funnelsLive'), value: stats.total_funnels || 0, icon: Layers },
+              { label: t('chatSessions'), value: stats.total_chats || 0, icon: Bot },
+              { label: t('totalEvents'), value: stats.total_events || 0, icon: TrendingUp },
             ].map(s => (
               <Card key={s.label} className="bg-white/5 border-white/10">
                 <CardContent className="pt-5 pb-4">
@@ -173,8 +175,8 @@ export default function Dashboard() {
         {/* The 7 Modules */}
         <div className="mb-14">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold">The 7 Modules</h3>
-            <span className="text-white/40 text-sm">All fire in sequence when you start a project</span>
+            <h3 className="text-xl font-bold">{t('modules')}</h3>
+            <span className="text-white/40 text-sm">{t('moduleNote')}</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {MODULES.map((m) => (
@@ -185,9 +187,9 @@ export default function Dashboard() {
                   </div>
                   <div className="flex items-center gap-2 mb-1.5">
                     <span className="text-xs font-bold text-white/30">M{m.id}</span>
-                    <span className="font-semibold text-sm">{m.label}</span>
+                    <span className="font-semibold text-sm">{t(m.label)}</span>
                   </div>
-                  <p className="text-white/45 text-xs leading-relaxed">{m.desc}</p>
+                  <p className="text-white/45 text-xs leading-relaxed">{t(m.desc)}</p>
                 </CardContent>
               </Card>
             ))}
@@ -195,8 +197,8 @@ export default function Dashboard() {
             <Card className="bg-violet-500/5 border-violet-500/20 border-dashed flex items-center justify-center hover:bg-violet-500/10 transition-colors cursor-pointer" onClick={() => inputRef.current?.focus()}>
               <CardContent className="pt-5 pb-5 text-center">
                 <Plus className="w-8 h-8 text-violet-400/60 mx-auto mb-3" />
-                <p className="text-violet-300/60 text-sm font-medium">New Project</p>
-                <p className="text-violet-300/40 text-xs mt-1">Enter a keyword above</p>
+                <p className="text-violet-300/60 text-sm font-medium">{t('newProject')}</p>
+                <p className="text-violet-300/40 text-xs mt-1">{t('enterKeyword')}</p>
               </CardContent>
             </Card>
           </div>
@@ -206,9 +208,9 @@ export default function Dashboard() {
         {recentProjects.length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold">Recent Projects</h3>
+              <h3 className="text-xl font-bold">{t('recentProjects')}</h3>
               <Button variant="ghost" size="sm" className="text-white/40 hover:text-white" onClick={() => navigate('/catalog')}>
-                View all <ChevronRight className="w-4 h-4 ml-1" />
+                {t('viewAll')} <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -252,10 +254,10 @@ export default function Dashboard() {
         {recentProjects.length === 0 && (
           <div className="border border-white/10 rounded-2xl p-10 text-center">
             <Sparkles className="w-12 h-12 text-violet-400/40 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No projects yet</h3>
-            <p className="text-white/40 text-sm mb-6">Type a keyword above and hit Forge It to create your first digital product system</p>
+            <h3 className="text-lg font-semibold mb-2">{t('noProjects')}</h3>
+            <p className="text-white/40 text-sm mb-6">{t('noProjectsText')}</p>
             <Button onClick={() => inputRef.current?.focus()} className="bg-violet-600 hover:bg-violet-500">
-              <Plus className="w-4 h-4 mr-2" /> Start First Project
+              <Plus className="w-4 h-4 mr-2" /> {t('startFirst')}
             </Button>
           </div>
         )}
