@@ -46,8 +46,8 @@ export const locale = {
 export const projects = {
   list: () => call('/projects'),
   get: (id: string) => call(`/projects/${id}`),
-  create: (keyword: string) =>
-    call('/projects', { method: 'POST', body: JSON.stringify({ keyword }) }),
+  create: (keyword: string, themeType?: string, themeValue?: string) =>
+    call('/projects', { method: 'POST', body: JSON.stringify({ keyword, theme_type: themeType || undefined, theme_value: themeValue || undefined }) }),
   delete: (id: string) => call(`/projects/${id}`, { method: 'DELETE' }),
 }
 

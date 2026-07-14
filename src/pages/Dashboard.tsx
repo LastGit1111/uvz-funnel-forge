@@ -21,6 +21,8 @@ const MODULES = [
 
 export default function Dashboard() {
   const [keyword, setKeyword] = useState('')
+  const [themeType, setThemeType] = useState('')
+  const [themeValue, setThemeValue] = useState('')
   const [loading, setLoading] = useState(false)
   const [recentProjects, setRecentProjects] = useState<any[]>([])
   const [stats, setStats] = useState<any>(null)
@@ -44,9 +46,10 @@ export default function Dashboard() {
   const handleStart = async () => {
     const kw = keyword.trim()
     if (!kw) return toast({ title: 'Enter a keyword', description: 'Type any niche, industry, or topic to begin', variant: 'destructive' })
+    if (themeType && !themeValue.trim()) return toast({ title: 'Name the theme', description: `Enter the ${themeType} you want the landing page to evoke.`, variant: 'destructive' })
     setLoading(true)
     try {
-      const p = await projects.create(kw)
+      const p = await projects.create(kw, themeType, themeValue.trim())
       navigate(`/project/${p.project.id}`)
     } catch (e: any) {
       toast({ title: 'Could not create project', description: e.message, variant: 'destructive' })
@@ -129,6 +132,18 @@ export default function Dashboard() {
             <p className="text-white/30 text-sm mt-3">
               Try: "zodiac compatibility" · "perimenopause weight loss" · "delivery driver income" · "leash aggression"
             </p>
+            <div className="mt-5 grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-3 text-left">
+              <select value={themeType} onChange={event => { setThemeType(event.target.value); if (!event.target.value) setThemeValue('') }} className="h-11 rounded-xl border border-white/15 bg-white/5 px-3 text-sm text-white outline-none focus:border-violet-500">
+                <option value="" className="bg-[#15151d]">No page theme</option>
+                <option value="country" className="bg-[#15151d]">Country</option>
+                <option value="place" className="bg-[#15151d]">Island or place</option>
+                <option value="event" className="bg-[#15151d]">Event</option>
+                <option value="zodiac" className="bg-[#15151d]">Zodiac sign</option>
+                <option value="custom" className="bg-[#15151d]">Custom theme</option>
+              </select>
+              {themeType && <Input value={themeValue} onChange={event => setThemeValue(event.target.value)} placeholder={themeType === 'country' ? 'e.g. Curaçao' : themeType === 'place' ? 'e.g. Klein Curaçao' : themeType === 'event' ? 'e.g. Carnival 2027' : themeType === 'zodiac' ? 'e.g. Scorpio' : 'Describe the theme'} className="h-11 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-xl focus-visible:ring-violet-500" />}
+              {!themeType && <p className="self-center text-xs text-white/35">Optional: guide the landing page with a location, event, zodiac, or custom visual theme.</p>}
+            </div>
           </div>
         </div>
 

@@ -528,6 +528,15 @@ export default function ProjectView() {
                 </div>
               ) : (
                 <div className="space-y-5">
+                  {funnelData.funnel.landing_page && (
+                    <div className="bg-violet-500/10 border border-violet-500/20 rounded-2xl p-5">
+                      <p className="text-xs text-violet-300/60 mb-1">Landing Page</p>
+                      <h3 className="text-xl font-bold text-white">{funnelData.funnel.landing_page.headline}</h3>
+                      {funnelData.funnel.landing_page.subheadline && <p className="text-white/65 text-sm mt-2">{funnelData.funnel.landing_page.subheadline}</p>}
+                      {Array.isArray(funnelData.funnel.landing_page.hero_bullets) && <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">{funnelData.funnel.landing_page.hero_bullets.map((bullet: string, i: number) => <div key={i} className="bg-white/5 rounded-lg p-2 text-sm text-white/75">{bullet}</div>)}</div>}
+                      {funnelData.funnel.landing_page.design_direction && <p className="text-white/45 text-xs mt-4">Design direction: {funnelData.funnel.landing_page.design_direction.tone} · {funnelData.funnel.landing_page.design_direction.imagery}</p>}
+                    </div>
+                  )}
                   {/* 3 Angle Offers */}
                   {funnelData.funnel.offers && (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

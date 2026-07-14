@@ -24,6 +24,10 @@ funnel.post('/build', async c => {
   ).bind(project_id).first<any>()
 
   const uvzText = uvzRow?.selected_uvz || ''
+  const project = await c.env.DB.prepare('SELECT theme_type, theme_value FROM projects WHERE id = ?').bind(project_id).first<any>()
+  const theme = project?.theme_type && project?.theme_value
+    ? `${project.theme_type}: ${project.theme_value}`
+    : 'No explicit theme; use a clean, audience-appropriate visual direction.'
   const title = productData?.title || 'Digital Product'
   const transformation = productData?.transformation || ''
   const priceLow = productData?.price_low || 17
@@ -34,6 +38,9 @@ Product Title: "${title}"
 UVZ (Target Audience): "${uvzText}"
 Transformation Promise: "${transformation}"
 Price Range: $${priceLow}–$${priceHigh}
+Landing Page Theme: "${theme}"
+
+Use the theme as a visual and editorial direction, not as a reason to make false local, cultural, event, or astrological claims. Include a practical design direction with palette, imagery, and tone that a page builder can use.
 
 Return ONLY valid JSON:
 {
@@ -44,7 +51,8 @@ Return ONLY valid JSON:
     "hero_bullets": ["benefit 1", "benefit 2", "benefit 3", "benefit 4", "benefit 5"],
     "cta_primary": "Call to action button text",
     "social_proof": "fake-realistic testimonial or social proof statement",
-    "guarantee": "risk reversal statement"
+    "guarantee": "risk reversal statement",
+    "design_direction": { "palette": ["color 1", "color 2", "color 3"], "imagery": "specific image/art direction", "tone": "visual and editorial tone" }
   },
   "three_angle_offer": [
     { "angle": "Pain Angle", "hook": "headline from pain perspective", "copy": "2-3 sentence copy block" },
@@ -90,7 +98,7 @@ Return ONLY valid JSON:
     id,
     project_id,
     'standard',
-    JSON.stringify(funnelData.landing_page),
+    JSON.stringify(funnelData),
     JSON.stringify(funnelData.five_hooks),
     JSON.stringify(funnelData.email_sequence),
     now
@@ -121,11 +129,12 @@ funnel.get('/:projectId', async c => {
 
   if (!row) return c.json({ funnel: null })
 
-  const landing = tryJSON(row.steps_json, {})
+  const stored = tryJSON(row.steps_json, {})
   const hooks = tryJSON(row.hooks_json, [])
   const emails = tryJSON(row.email_sequence_json, [])
 
-  return c.json({ funnel: { id: row.id, project_id: row.project_id, landing_page: landing, five_hooks: hooks, email_sequence: emails } })
+  if (stored?.landing_page) return c.json({ funnel: { ...stored, id: row.id, project_id: row.project_id } })
+  return c.json({ funnel: { id: row.id, project_id: row.project_id, landing_page: stored, five_hooks: hooks, email_sequence: emails } })
 })
 
 export default funnel

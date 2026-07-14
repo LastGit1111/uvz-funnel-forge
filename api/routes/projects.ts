@@ -3,6 +3,7 @@ import { uid, getBearer, verifyJWT } from '../lib/auth'
 
 type Env = { DB: D1Database; JWT_SECRET: string }
 const projects = new Hono<{ Bindings: Env }>()
+const themeTypes = ['country', 'place', 'event', 'zodiac', 'custom'] as const
 
 async function getUser(c: any): Promise<{ sub: string; is_guest?: boolean }> {
   const token = getBearer(c.req.header('Authorization'))
@@ -37,12 +38,17 @@ projects.get('/', async c => {
 
 projects.post('/', async c => {
   const user = await getUser(c)
-  const { keyword } = await c.req.json()
+  const { keyword, theme_type, theme_value } = await c.req.json()
   if (!keyword?.trim()) return c.json({ error: 'keyword required' }, 400)
+  if (theme_type && !themeTypes.includes(theme_type)) return c.json({ error: 'invalid theme_type' }, 400)
+  if (theme_type && !theme_value?.trim()) return c.json({ error: 'theme_value required when theme_type is set' }, 400)
   const id = uid()
   const now = new Date().toISOString()
-  await c.env.DB.prepare('INSERT INTO projects (id, keyword, status, user_id, created_at) VALUES (?, ?, ?, ?, ?)').bind(id, keyword.trim().toLowerCase(), 'analyzing', user.sub, now).run()
-  return c.json({ project: { id, keyword: keyword.trim().toLowerCase(), status: 'analyzing', user_id: user.sub, created_at: now } }, 201)
+  const normalizedType = theme_type || null
+  const normalizedValue = normalizedType ? theme_value.trim() : null
+  await c.env.DB.prepare('INSERT INTO projects (id, keyword, status, user_id, theme_type, theme_value, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+    .bind(id, keyword.trim().toLowerCase(), 'analyzing', user.sub, normalizedType, normalizedValue, now).run()
+  return c.json({ project: { id, keyword: keyword.trim().toLowerCase(), status: 'analyzing', user_id: user.sub, theme_type: normalizedType, theme_value: normalizedValue, created_at: now } }, 201)
 })
 
 projects.get('/:id', async c => {
