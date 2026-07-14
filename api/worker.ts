@@ -13,6 +13,7 @@ import chatbotRoutes from './routes/modules/chatbot'
 import courseRoutes from './routes/modules/course'
 import funnelRoutes from './routes/modules/funnel'
 import catalogRoutes from './routes/catalog'
+import localeRoutes from './routes/locale'
 
 type Env = {
   DB: D1Database
@@ -92,6 +93,7 @@ app.route('/api/modules/chatbot', chatbotRoutes)
 app.route('/api/modules/course', courseRoutes)
 app.route('/api/modules/funnel', funnelRoutes)
 app.route('/api/catalog', catalogRoutes)
+app.route('/api/locale', localeRoutes)
 
 // Serve React SPA
 app.use('/static/*', serveStatic({ root: './' }))

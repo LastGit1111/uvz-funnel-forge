@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
 import { projects, catalog } from '@/services/api'
+import LanguageSelector from '@/components/LanguageSelector'
 
 const MODULES = [
   { id: 1, icon: Search, label: 'UVZ Analyzer', desc: 'Turn any keyword into 10 scored UVZ options', color: 'from-violet-500 to-purple-600' },
@@ -69,6 +70,7 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <LanguageSelector />
             <Button variant="ghost" size="sm" className="text-white/60 hover:text-white" onClick={() => navigate('/catalog')}>
               <BarChart3 className="w-4 h-4 mr-1.5" /> Catalog
             </Button>
