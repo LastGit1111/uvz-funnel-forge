@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
 import { projects, uvz, product, tools, chatbot, course, funnel } from '@/services/api'
+import Footer from '@/components/Footer'
 
 const TABS = [
   { id: 'uvz', label: 'UVZ Analyzer', icon: Search },
@@ -165,6 +166,69 @@ export default function ProjectView() {
     }
   }
 
+  const exportPackage = () => {
+    const payload = {
+      project,
+      uvz: uvzData?.analysis || null,
+      product: productData?.product || null,
+      tool: toolData?.tool || null,
+      chatbot: chatbotData?.chatbot || null,
+      course: courseData?.course || null,
+      funnel: funnelData?.funnel || null,
+      exported_at: new Date().toISOString(),
+      review_note: 'AI-generated draft. Verify proof, claims, pricing, and compliance before publishing.',
+    }
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${kw.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-uvz-package.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    toast({ title: 'Export package downloaded' })
+  }
+
+  const runAllModules = async () => {
+    if (loading) return
+    setLoading('Run All')
+    try {
+      const analysis = uvzData?.analysis ? uvzData : await uvz.analyze(id!, kw)
+      setUvzData(analysis)
+
+      const generatedProduct = productData?.product
+        ? productData
+        : await product.generate(id!, analysis?.analysis?.selected_uvz || kw)
+      setProductData(generatedProduct)
+
+      const generatedTool = toolData?.tool
+        ? toolData
+        : await tools.build(id!, generatedProduct?.product?.recommended_tool_type || 'calculator', {
+            uvz: analysis?.analysis?.selected_uvz || kw,
+            product_title: generatedProduct?.product?.title || kw,
+          })
+      setToolData(generatedTool)
+
+      const generatedChatbot = chatbotData?.chatbot
+        ? chatbotData
+        : await chatbot.configure(id!, generatedProduct?.product?.persona || 'advisor', generatedProduct?.product?.title || kw)
+      setChatbotData(generatedChatbot)
+
+      const generatedCourse = courseData?.course ? courseData : await course.generate(id!)
+      setCourseData(generatedCourse)
+
+      const generatedFunnel = funnelData?.funnel ? funnelData : await funnel.build(id!)
+      setFunnelData(generatedFunnel)
+
+      setTab('analytics')
+      toast({ title: 'All modules complete' })
+      await loadProject()
+    } catch (e: any) {
+      toast({ title: 'Run All stopped', description: e.message, variant: 'destructive' })
+    } finally {
+      setLoading(null)
+    }
+  }
+
   const sendChat = async () => {
     if (!chatInput.trim() || chatLoading) return
     const msg = chatInput.trim()
@@ -204,9 +268,18 @@ export default function ProjectView() {
               <p className="text-xs text-white/40">{project.id}</p>
             </div>
           </div>
-          <Badge variant="outline" className={`${project.status === 'complete' ? 'border-emerald-500/40 text-emerald-300' : 'border-amber-500/40 text-amber-300'}`}>
-            {project.status}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Button size="sm" disabled={!!loading} onClick={runAllModules} className="bg-violet-600 hover:bg-violet-500">
+              {loading === 'Run All' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+              Run All
+            </Button>
+            <Button size="sm" variant="outline" onClick={exportPackage} className="border-white/15 text-white/70 hover:text-white">
+              Export
+            </Button>
+            <Badge variant="outline" className={`${project.status === 'complete' ? 'border-emerald-500/40 text-emerald-300' : 'border-amber-500/40 text-amber-300'}`}>
+              {project.status}
+            </Badge>
+          </div>
         </div>
       </header>
 
@@ -654,6 +727,7 @@ export default function ProjectView() {
           </TabsContent>
         </Tabs>
       </div>
+      <Footer />
     </div>
   )
 }

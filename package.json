@@ -10,6 +10,7 @@
     "dev:sandbox": "wrangler pages dev dist --d1=uvz-funnel-db --local --ip 0.0.0.0 --port 3000",
     "preview": "wrangler pages dev dist --d1=uvz-funnel-db --local",
     "deploy": "npm run build && wrangler pages deploy dist --project-name uvz-funnel-forge",
+    "smoke:launch": "node scripts/smoke-launch.mjs",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "db:migrate:local": "wrangler d1 migrations apply uvz-funnel-db --local",
     "db:migrate:prod": "wrangler d1 migrations apply uvz-funnel-db",

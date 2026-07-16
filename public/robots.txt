@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://uvz-funnel-forge.pages.dev/sitemap.xml

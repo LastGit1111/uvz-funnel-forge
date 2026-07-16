@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { catalog, projects } from '@/services/api'
+import Footer from '@/components/Footer'
 
 export default function CatalogPage() {
   const navigate = useNavigate()
@@ -105,6 +106,7 @@ export default function CatalogPage() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   )
 }

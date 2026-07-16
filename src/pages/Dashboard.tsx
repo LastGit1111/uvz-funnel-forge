@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
 import { projects, catalog } from '@/services/api'
+import Footer from '@/components/Footer'
 
 const MODULES = [
   { id: 1, icon: Search, label: 'UVZ Analyzer', desc: 'Turn any keyword into 10 scored UVZ options', color: 'from-violet-500 to-purple-600' },
@@ -86,7 +87,7 @@ export default function Dashboard() {
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-violet-500/10 border border-violet-500/20 rounded-full px-4 py-1.5 text-sm text-violet-300 mb-6">
             <Sparkles className="w-3.5 h-3.5" />
-            One keyword. One session. One complete product business.
+            One keyword. One guided session. One complete product business draft.
           </div>
           <h2 className="text-5xl md:text-6xl font-black tracking-tight mb-6 leading-none">
             Turn Any Keyword Into<br />
@@ -96,7 +97,7 @@ export default function Dashboard() {
           </h2>
           <p className="text-white/50 text-xl max-w-2xl mx-auto mb-10">
             7 AI modules. UVZ analysis → product → tool → chatbot → course → funnel → catalog. 
-            Scored, packaged, and ready to deploy on Whop.
+            Scored, packaged, and ready for human review before publishing.
           </p>
 
           {/* Keyword Input */}
@@ -156,7 +157,7 @@ export default function Dashboard() {
         <div className="mb-14">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold">The 7 Modules</h3>
-            <span className="text-white/40 text-sm">All fire in sequence when you start a project</span>
+            <span className="text-white/40 text-sm">Run manually or use Run All inside a project</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {MODULES.map((m) => (
@@ -242,6 +243,7 @@ export default function Dashboard() {
           </div>
         )}
       </main>
+      <Footer />
     </div>
   )
 }
