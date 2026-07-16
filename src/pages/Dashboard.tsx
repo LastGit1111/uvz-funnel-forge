@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
-import { projects, catalog } from '@/services/api'
+import { auth, projects, catalog } from '@/services/api'
 import LanguageSelector from '@/components/LanguageSelector'
 import { useLocale } from '@/i18n'
 
@@ -46,6 +46,11 @@ export default function Dashboard() {
   }
 
   const handleStart = async () => {
+    if (!auth.isLoggedIn()) {
+      toast({ title: 'Sign in required', description: 'Create a secure workspace before starting a project.' })
+      navigate('/login')
+      return
+    }
     const kw = keyword.trim()
     if (!kw) return toast({ title: t('enterKeywordTitle'), description: t('enterKeywordText'), variant: 'destructive' })
     if (themeType && !themeValue.trim()) return toast({ title: t('nameTheme'), description: t('nameThemeText', { theme: t(themeType) }), variant: 'destructive' })
