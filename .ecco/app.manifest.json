@@ -1,0 +1,9 @@
+{
+  "id": "uvz-funnel-forge",
+  "role": "SPECIFICATION_ONLY",
+  "status": "FOUND_LOCAL",
+  "world": null,
+  "customerJob": "OWNER_INPUT_REQUIRED",
+  "requiredSecrets": [],
+  "r2": "R2_READY_DISABLED"
+}
