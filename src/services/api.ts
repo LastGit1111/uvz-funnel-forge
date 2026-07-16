@@ -36,6 +36,8 @@ export const auth = {
   isLoggedIn: () => !!localStorage.getItem('uvz_token'),
 }
 
+export const api = { get: (path: string) => call(path) }
+
 export const locale = {
   get: () => call('/locale'),
   save: (value: string) => call('/locale', { method: 'PUT', body: JSON.stringify({ locale: value }) }),

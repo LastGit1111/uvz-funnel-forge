@@ -7,7 +7,7 @@ const maxUploadBytes = 10 * 1024 * 1024
 
 async function ownedProject(c: any, projectId: string) {
   const token = getBearer(c.req.header('Authorization'))
-  const user = token && await verifyJWT(token, c.env.JWT_SECRET || 'dev-secret')
+  const user = token && c.env.JWT_SECRET && await verifyJWT(token, c.env.JWT_SECRET)
   if (!user || user.is_guest) return null
   return c.env.DB.prepare('SELECT id FROM projects WHERE id = ? AND user_id = ?').bind(projectId, user.sub).first()
 }

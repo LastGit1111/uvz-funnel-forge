@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://uvz.thebesttrendingnow.com/sitemap.xml

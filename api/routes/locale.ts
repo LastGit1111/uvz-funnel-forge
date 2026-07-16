@@ -36,7 +36,8 @@ function suggestedLocale(c: any): Locale {
 async function currentUser(c: any) {
   const token = getBearer(c.req.header('Authorization'))
   if (!token) return null
-  return verifyJWT(token, c.env.JWT_SECRET || 'dev-secret')
+  if (!c.env.JWT_SECRET) return null
+  return verifyJWT(token, c.env.JWT_SECRET)
 }
 
 const locale = new Hono<{ Bindings: Env }>()

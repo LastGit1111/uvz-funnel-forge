@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, Zap, BarChart3, BookOpen, Bot, Layers, Funnel, Plus, ArrowRight, TrendingUp, Package, Sparkles, ChevronRight, Brain } from 'lucide-react'
+import { Search, Zap, BarChart3, BookOpen, Bot, Layers, Plus, ArrowRight, TrendingUp, Package, Sparkles, ChevronRight, Brain } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

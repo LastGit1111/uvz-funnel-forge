@@ -3,15 +3,49 @@ export function uid(): string {
   return crypto.randomUUID()
 }
 
-export async function hashPassword(password: string): Promise<string> {
-  const encoder = new TextEncoder()
-  const data = encoder.encode(password)
-  const hash = await crypto.subtle.digest('SHA-256', data)
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('')
+const PBKDF2_ITERATIONS = 210_000
+const encoder = new TextEncoder()
+
+function b64(buf: ArrayBuffer): string {
+  return btoa(String.fromCharCode(...new Uint8Array(buf)))
 }
 
-export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  return (await hashPassword(password)) === hash
+function fromB64(value: string): Uint8Array {
+  return Uint8Array.from(atob(value), char => char.charCodeAt(0))
+}
+
+async function pbkdf2(password: string, salt: Uint8Array, iterations: number): Promise<ArrayBuffer> {
+  const material = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits'])
+  return crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations }, material, 256)
+}
+
+/** Salted, slow password hash. The encoded format is intentionally self-describing. */
+export async function hashPassword(password: string): Promise<string> {
+  const salt = crypto.getRandomValues(new Uint8Array(16))
+  const derived = await pbkdf2(password, salt, PBKDF2_ITERATIONS)
+  return `pbkdf2$${PBKDF2_ITERATIONS}$${b64(salt.buffer)}$${b64(derived)}`
+}
+
+export async function verifyPassword(password: string, stored: string): Promise<boolean> {
+  const parts = stored.split('$')
+  if (parts.length === 4 && parts[0] === 'pbkdf2') {
+    const iterations = Number(parts[1])
+    if (!Number.isInteger(iterations) || iterations < 100_000) return false
+    const actual = new Uint8Array(await pbkdf2(password, fromB64(parts[2]), iterations))
+    const expected = fromB64(parts[3])
+    if (actual.length !== expected.length) return false
+    let mismatch = 0
+    for (let i = 0; i < actual.length; i++) mismatch |= actual[i] ^ expected[i]
+    return mismatch === 0
+  }
+  // One-release compatibility path for accounts created before salted hashes.
+  const legacy = await crypto.subtle.digest('SHA-256', encoder.encode(password))
+  const hex = Array.from(new Uint8Array(legacy)).map(b => b.toString(16).padStart(2, '0')).join('')
+  return stored.length === hex.length && stored === hex
+}
+
+export function isLegacyPasswordHash(stored: string): boolean {
+  return !stored.startsWith('pbkdf2$')
 }
 
 async function getKey(secret: string): Promise<CryptoKey> {

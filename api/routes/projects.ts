@@ -1,18 +1,12 @@
 import { Hono } from 'hono'
-import { uid, getBearer, verifyJWT } from '../lib/auth'
+import { uid } from '../lib/auth'
 
 type Env = { DB: D1Database; JWT_SECRET: string }
 const projects = new Hono<{ Bindings: Env }>()
 const themeTypes = ['country', 'place', 'event', 'zodiac', 'custom'] as const
 
 async function getUser(c: any): Promise<{ sub: string; is_guest?: boolean }> {
-  const token = getBearer(c.req.header('Authorization'))
-  if (token) {
-    const p = await verifyJWT(token, c.env.JWT_SECRET || 'dev-secret')
-    if (p) return p
-  }
-  // Auto-create guest session
-  return { sub: 'guest_' + uid(), is_guest: true }
+  return c.get('user')
 }
 
 projects.get('/', async c => {
@@ -53,14 +47,17 @@ projects.post('/', async c => {
 
 projects.get('/:id', async c => {
   const id = c.req.param('id')
-  const p = await c.env.DB.prepare('SELECT * FROM projects WHERE id = ?').bind(id).first<any>()
+  const user = await getUser(c)
+  const p = await c.env.DB.prepare('SELECT * FROM projects WHERE id = ? AND user_id = ?').bind(id, user.sub).first<any>()
   if (!p) return c.json({ error: 'Not found' }, 404)
   return c.json({ project: p })
 })
 
 projects.delete('/:id', async c => {
   const id = c.req.param('id')
-  await c.env.DB.prepare('DELETE FROM projects WHERE id = ?').bind(id).run()
+  const user = await getUser(c)
+  const result = await c.env.DB.prepare('DELETE FROM projects WHERE id = ? AND user_id = ?').bind(id, user.sub).run()
+  if (!result.meta.changes) return c.json({ error: 'Not found' }, 404)
   return c.json({ deleted: true })
 })
 
