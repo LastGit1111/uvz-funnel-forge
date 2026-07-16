@@ -172,8 +172,8 @@ export default function ProjectView() {
     setChatMessages(m => [...m, { role: 'user', content: msg }])
     setChatLoading(true)
     try {
-      const productId = productData?.product?.id || id
-      const res = await chatbot.chat(productId, msg, sessionId)
+      const productId = id!
+      const res = await chatbot.chat(productId, msg, sessionId, chatMessages.slice(-6))
       setChatMessages(m => [...m, { role: 'assistant', content: res.reply || res.message || 'Got it!' }])
     } catch {
       setChatMessages(m => [...m, { role: 'assistant', content: 'I had trouble connecting. Please try again.' }])
@@ -394,10 +394,10 @@ export default function ProjectView() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {chatbotData.chatbot.persona_name && (
+                    {(chatbotData.chatbot.persona || chatbotData.chatbot.persona_name) && (
                       <div className="bg-white/5 rounded-xl p-4">
                         <p className="text-xs text-white/40 mb-1">AI Persona</p>
-                        <p className="font-semibold">{chatbotData.chatbot.persona_name}</p>
+                        <p className="font-semibold">{chatbotData.chatbot.persona || chatbotData.chatbot.persona_name}</p>
                         {chatbotData.chatbot.persona_description && <p className="text-white/60 text-xs mt-1">{chatbotData.chatbot.persona_description}</p>}
                       </div>
                     )}
@@ -490,12 +490,23 @@ export default function ProjectView() {
                             <CardContent className="pt-4 pb-4">
                               <div className="flex items-start justify-between">
                                 <div>
-                                  <p className="font-semibold text-sm">Module {i + 1}: {m.title}</p>
-                                  {m.duration && <p className="text-white/40 text-xs mt-0.5">~{m.duration}</p>}
+                                  <p className="font-semibold text-sm">{m.title}</p>
+                                  {(m.lesson_count || m.duration) && <p className="text-white/40 text-xs mt-0.5">{m.lesson_count ? `${m.lesson_count} lessons` : `~${m.duration}`}</p>}
                                 </div>
-                                <CopyBtn text={m.script || m.title} />
+                                <CopyBtn text={m.script || m.lessons?.map((lesson: any) => `${lesson.title}\n${lesson.script_intro}`).join('\n\n') || m.title} />
                               </div>
-                              {m.script && <p className="text-white/65 text-xs mt-3 leading-relaxed">{m.script.slice(0, 200)}...</p>}
+                              {m.module_summary && <p className="text-white/65 text-xs mt-3 leading-relaxed">{m.module_summary}</p>}
+                              {Array.isArray(m.lessons) && (
+                                <div className="mt-3 space-y-2">
+                                  {m.lessons.slice(0, 3).map((lesson: any, lessonIndex: number) => (
+                                    <div key={lessonIndex} className="bg-white/5 rounded-lg p-3">
+                                      <p className="text-xs font-semibold text-white/70">{lesson.title}</p>
+                                      {lesson.script_intro && <p className="text-white/50 text-xs mt-1">{lesson.script_intro}</p>}
+                                      {lesson.worksheet_prompt && <p className="text-violet-200/70 text-xs mt-2">Worksheet: {lesson.worksheet_prompt}</p>}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                               {m.worksheet && (
                                 <div className="mt-3 bg-white/5 rounded-lg p-3">
                                   <p className="text-xs text-white/40 mb-1">Worksheet</p>
@@ -529,14 +540,33 @@ export default function ProjectView() {
               ) : (
                 <div className="space-y-5">
                   {/* 3 Angle Offers */}
-                  {funnelData.funnel.offers && (
+                  {funnelData.funnel.landing_page && (
+                    <div className="bg-violet-500/10 border border-violet-500/20 rounded-2xl p-5">
+                      <p className="text-xs text-violet-300/60 mb-1">Landing Page</p>
+                      <h3 className="text-xl font-bold text-white">{funnelData.funnel.landing_page.headline}</h3>
+                      {funnelData.funnel.landing_page.subheadline && <p className="text-white/65 text-sm mt-2">{funnelData.funnel.landing_page.subheadline}</p>}
+                      {Array.isArray(funnelData.funnel.landing_page.hero_bullets) && (
+                        <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+                          {funnelData.funnel.landing_page.hero_bullets.map((bullet: string, i: number) => (
+                            <div key={i} className="bg-white/5 rounded-lg p-2 text-sm text-white/75">{bullet}</div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {(funnelData.funnel.three_angle_offer || funnelData.funnel.offers) && (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {['pain', 'dream', 'enemy'].map(angle => (
-                        <div key={angle} className="bg-white/5 rounded-xl p-4">
+                      {(Array.isArray(funnelData.funnel.three_angle_offer) ? funnelData.funnel.three_angle_offer : ['pain', 'dream', 'enemy'].map(angle => ({
+                        angle,
+                        hook: funnelData.funnel.offers?.[`${angle}_headline`],
+                        copy: funnelData.funnel.offers?.[`${angle}_copy`],
+                      }))).map((offer: any) => (
+                        <div key={offer.angle} className="bg-white/5 rounded-xl p-4">
                           <div className="flex items-center gap-2 mb-2">
-                            <Badge variant="outline" className="text-xs capitalize border-white/20 text-white/60">{angle} Angle</Badge>
+                            <Badge variant="outline" className="text-xs capitalize border-white/20 text-white/60">{offer.angle}</Badge>
                           </div>
-                          <p className="text-white/80 text-sm font-medium">{funnelData.funnel.offers?.[`${angle}_headline`]}</p>
+                          <p className="text-white/80 text-sm font-medium">{offer.hook}</p>
+                          {offer.copy && <p className="text-white/50 text-xs mt-2">{offer.copy}</p>}
                         </div>
                       ))}
                     </div>
@@ -557,11 +587,11 @@ export default function ProjectView() {
                     </div>
                   )}
                   {/* Hooks */}
-                  {funnelData.funnel.hooks && (
+                  {(funnelData.funnel.five_hooks || funnelData.funnel.hooks) && (
                     <div>
                       <p className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">5 Hook Options</p>
                       <div className="space-y-2">
-                        {(Array.isArray(funnelData.funnel.hooks) ? funnelData.funnel.hooks : []).map((h: string, i: number) => (
+                        {(Array.isArray(funnelData.funnel.five_hooks) ? funnelData.funnel.five_hooks : Array.isArray(funnelData.funnel.hooks) ? funnelData.funnel.hooks : []).map((h: string, i: number) => (
                           <div key={i} className="flex items-start gap-3 bg-white/5 rounded-xl p-3">
                             <span className="text-xs font-bold text-violet-400 w-5 shrink-0">H{i + 1}</span>
                             <p className="text-white/75 text-sm flex-1">{h}</p>
@@ -582,7 +612,7 @@ export default function ProjectView() {
                               <p className="text-xs font-semibold text-white/60">Email {i + 1} — {e.subject || e.title}</p>
                               <CopyBtn text={e.body || e.subject} />
                             </div>
-                            {e.body && <p className="text-white/65 text-xs leading-relaxed">{e.body.slice(0, 150)}...</p>}
+                            {(e.body || e.body_intro || e.preview) && <p className="text-white/65 text-xs leading-relaxed">{(e.body || e.body_intro || e.preview).slice(0, 180)}...</p>}
                           </div>
                         ))}
                       </div>

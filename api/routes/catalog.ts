@@ -8,7 +8,11 @@ const catalog = new Hono<{ Bindings: Env }>()
 // List all products
 catalog.get('/', async c => {
   const { results } = await c.env.DB.prepare(
-    'SELECT * FROM products ORDER BY created_at DESC LIMIT 100'
+    `SELECT products.*,
+            (SELECT id FROM projects WHERE projects.keyword = products.keyword ORDER BY created_at DESC LIMIT 1) as project_id
+     FROM products
+     ORDER BY products.created_at DESC
+     LIMIT 100`
   ).all<any>()
   return c.json({ products: results || [] })
 })

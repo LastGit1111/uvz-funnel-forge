@@ -43,7 +43,7 @@ Return ONLY valid JSON:
     "subheadline": "one sentence expanding on the headline",
     "hero_bullets": ["benefit 1", "benefit 2", "benefit 3", "benefit 4", "benefit 5"],
     "cta_primary": "Call to action button text",
-    "social_proof": "fake-realistic testimonial or social proof statement",
+    "social_proof": "ethical proof placeholder that says what verified proof to add, without inventing a testimonial or result",
     "guarantee": "risk reversal statement"
   },
   "three_angle_offer": [
@@ -73,9 +73,17 @@ Return ONLY valid JSON:
   "funnel_path": "Entry Product → Bridge Tool → Core Offer description in one sentence"
 }`
 
+  const promptWithCompliance = `${prompt}
+
+Promotion-readiness rules:
+- Do not invent testimonials, revenue claims, customer counts, credentials, or guarantees.
+- If proof is needed, write a clearly labeled placeholder such as "Add verified customer result here".
+- Make every hook specific, but keep it truthful and platform-safe.
+- The output should be ready for a Whop, landing page, or email draft after human proof is added.`
+
   const raw = await chat(apiKey, [
     { role: 'system', content: UVZ_SYSTEM_PROMPT },
-    { role: 'user', content: prompt }
+    { role: 'user', content: promptWithCompliance }
   ])
 
   const funnelData = tryJSON(raw)
@@ -90,7 +98,7 @@ Return ONLY valid JSON:
     id,
     project_id,
     'standard',
-    JSON.stringify(funnelData.landing_page),
+    JSON.stringify(funnelData),
     JSON.stringify(funnelData.five_hooks),
     JSON.stringify(funnelData.email_sequence),
     now
@@ -121,11 +129,15 @@ funnel.get('/:projectId', async c => {
 
   if (!row) return c.json({ funnel: null })
 
-  const landing = tryJSON(row.steps_json, {})
+  const stored = tryJSON(row.steps_json, {})
   const hooks = tryJSON(row.hooks_json, [])
   const emails = tryJSON(row.email_sequence_json, [])
 
-  return c.json({ funnel: { id: row.id, project_id: row.project_id, landing_page: landing, five_hooks: hooks, email_sequence: emails } })
+  if (stored?.landing_page) {
+    return c.json({ funnel: { ...stored, id: row.id, project_id: row.project_id } })
+  }
+
+  return c.json({ funnel: { id: row.id, project_id: row.project_id, landing_page: stored, five_hooks: hooks, email_sequence: emails } })
 })
 
 export default funnel

@@ -94,7 +94,7 @@ export default function CatalogPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-white/30 text-xs">{new Date(p.created_at).toLocaleDateString()}</span>
-                      <Button size="sm" variant="ghost" className="text-white/50 hover:text-white" onClick={() => navigate(`/project/${p.id}`)}>
+                      <Button size="sm" variant="ghost" className="text-white/50 hover:text-white" onClick={() => navigate(`/project/${p.project_id || p.id}`)}>
                         <ExternalLink className="w-4 h-4" />
                       </Button>
                     </div>

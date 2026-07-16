@@ -88,10 +88,10 @@ export const chatbot = {
       method: 'POST',
       body: JSON.stringify({ project_id: projectId, persona, product_knowledge: productKnowledge }),
     }),
-  chat: (productId: string, message: string, sessionId: string) =>
+  chat: (productId: string, message: string, sessionId: string, history: { role: string; content: string }[] = []) =>
     call('/modules/chatbot/chat', {
       method: 'POST',
-      body: JSON.stringify({ product_id: productId, message, session_id: sessionId }),
+      body: JSON.stringify({ product_id: productId, message, session_id: sessionId, history }),
     }),
   get: (projectId: string) => call(`/modules/chatbot/${projectId}`),
 }
