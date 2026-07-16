@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "readOnlyByDefault": true,
+  "reportPath": ".ecco/readiness-report.json",
+  "safeFixesRequire": "--fix-safe"
+}
